@@ -61,7 +61,7 @@
                                         </td>
                                         <td>
                                             <span t-field="line.price_subtotal"
-                                                  t-options='{"widget": "monetary", "currency_field": "o.currency_id", "currency_field_digits": 2, "currency_field_position": "before"}'/>
+                                                  t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -73,7 +73,7 @@
                             <p style="text-align: right; font-size: 14px; font-weight: normal;color: black; background: white !important;">
                                 Total....:
                                 <span t-field="o.amount_total"
-                                      t-options='{"widget": "monetary", "currency_field": "o.currency_id", "currency_field_digits": 2, "currency_field_position": "before"}'/>
+                                      t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
                             </p>
                             <div style="width: 100%; border-top: 1px solid #000; border-bottom: 1px solid #000;">
                                 <br/>
