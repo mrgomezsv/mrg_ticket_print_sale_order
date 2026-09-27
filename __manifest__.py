@@ -12,8 +12,9 @@
     'author': "Link Tech",
     'website': "https://www.linktechsv.com/",
 
-    'category': 'Sale',
-    'version': '0.1',
+    'category': 'Sales',
+    'version': '19.0.1.0.0',
+    'license': 'LGPL-3',
 
     'depends': ['base', 'sale', 'sale_management'],
 
@@ -21,4 +22,5 @@
         'views/templates.xml',
         'reports/report.xml',
     ],
+    'installable': True,
 }
