@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 {
     'name': "Impresión de Ticket desde Presupuestos",
 
@@ -13,7 +13,7 @@
     'website': "https://www.linktechsv.com/",
 
     'category': 'Sales',
-    'version': '19.0.1.0.0',
+    'version': '20.0.1.0.0',
     'license': 'LGPL-3',
 
     'depends': ['base', 'sale', 'sale_management'],
