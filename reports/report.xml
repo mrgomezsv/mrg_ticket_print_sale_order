@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+    <!-- ============================================================
+         REPORTE EXISTENTE: Ticket para sale.order (sin cambios)
+         ============================================================ -->
     <record id="ticket_paper_format" model="report.paperformat">
         <field name="name">Ticket</field>
         <field name="format">custom</field>
@@ -22,5 +25,34 @@
         <field name="paperformat_id" ref="ticket_paper_format" /> <!-- Estableces el formato de papel personalizado "Ticket" -->
         <field name="binding_model_id" ref="sale.model_sale_order"/>
         <field name="binding_type">report</field>
+    </record>
+
+    <!-- ============================================================
+         NUEVO: Ticket DTE para account.move (80mm)
+         Solo accesible desde el botón del formulario de factura.
+         Sin binding_model_id para no contaminar el menú de impresión.
+         ============================================================ -->
+    <record id="ticket_dte_paper_format" model="report.paperformat">
+        <field name="name">Ticket DTE 80mm</field>
+        <field name="format">custom</field>
+        <field name="margin_top">3</field>
+        <field name="margin_bottom">3</field>
+        <field name="margin_left">2</field>
+        <field name="margin_right">2</field>
+        <field name="page_height">220</field><!-- Alto suficiente para el contenido -->
+        <field name="page_width">80</field><!-- 80mm estándar de ticket -->
+        <field name="header_line" eval="False"/>
+        <field name="orientation">Portrait</field>
+    </record>
+
+    <record id="action_ticket_dte_account_move" model="ir.actions.report">
+        <field name="name">Imprimir Ticket DTE</field>
+        <field name="model">account.move</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">mrg_ticket_print_sale_order.report_ticket_dte_account_move</field>
+        <field name="report_file">mrg_ticket_print_sale_order.report_ticket_dte_account_move</field>
+        <field name="print_report_name">'Ticket-DTE-%s' % (object.dte_numero_control or object.name)</field>
+        <field name="paperformat_id" ref="ticket_dte_paper_format"/>
+        <!-- Sin binding_model_id: solo accesible mediante el botón del formulario -->
     </record>
 </odoo>
