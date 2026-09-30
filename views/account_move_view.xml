@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- Botón "Imprimir Ticket" en el formulario de account.move.
-         Visible para facturas de cliente en estado publicado (posted).
-         Funciona tanto para facturas normales como para facturas DTE procesadas.
+    <!-- Botón "Imprimir Ticket" y control de visibilidad de DTE en account.move.
+         - "Imprimir Ticket": Visible para facturas de cliente en estado publicado (posted).
+         - "Facturar DTE" y "Previsualizar PDF DTE": Se ocultan si el tipo de documento NO
+           pertenece a un código DTE del catálogo de Hacienda.
          Sintaxis Odoo 16: attrs con domain list -->
     <record id="view_move_form_inherit_ticket_dte" model="ir.ui.view">
         <field name="name">account.move.form.ticket.dte</field>
@@ -12,12 +13,23 @@
         <field name="arch" type="xml">
             <!-- Anclamos antes del botón de registro de pago -->
             <xpath expr="//header/button[@name='action_register_payment']" position="before">
+                <field name="dte_tipo_catalogo_valido" invisible="1"/>
                 <button name="action_print_dte_ticket"
                         type="object"
                         string="Imprimir Ticket"
                         class="btn-secondary"
                         icon="fa-print"
                         attrs="{'invisible': ['|', ('state', '!=', 'posted'), ('move_type', 'not in', ('out_invoice', 'out_refund'))]}"/>
+            </xpath>
+
+            <!-- Ocultar botón "Facturar DTE" si el tipo de documento no tiene código DTE de Hacienda -->
+            <xpath expr="//header/button[@name='action_facturar_dte']" position="attributes">
+                <attribute name="attrs">{'invisible': ['|', '|', '|', '|', ('move_type', 'not in', ('out_invoice', 'out_refund', 'in_invoice')), ('state', '!=', 'posted'), ('dte_estado', 'in', ('PROCESADO', 'INVALIDADO')), ('is_pre_dte', '=', True), ('dte_tipo_catalogo_valido', '=', False)]}</attribute>
+            </xpath>
+
+            <!-- Ocultar botón "Previsualizar PDF DTE" si no es tipo DTE de Hacienda -->
+            <xpath expr="//header/button[@name='action_preview_dte_pdf']" position="attributes">
+                <attribute name="attrs">{'invisible': ['|', '|', '|', ('move_type', 'not in', ('out_invoice', 'out_refund', 'in_invoice')), ('state', '=', 'cancel'), ('dte_estado', 'in', ('PROCESADO', 'INVALIDADO')), ('dte_tipo_catalogo_valido', '=', False)]}</attribute>
             </xpath>
         </field>
     </record>
