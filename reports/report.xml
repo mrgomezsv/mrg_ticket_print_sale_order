@@ -28,9 +28,9 @@
     </record>
 
     <!-- ============================================================
-         NUEVO: Ticket DTE para account.move (80mm)
-         Solo accesible desde el botón del formulario de factura.
-         Sin binding_model_id para no contaminar el menú de impresión.
+         Ticket 80mm para account.move (Facturas normales y DTE)
+         Accesible mediante el botón "Imprimir Ticket" del formulario.
+         Sin binding_model_id para no saturar el menú de impresión general.
          ============================================================ -->
     <record id="ticket_dte_paper_format" model="report.paperformat">
         <field name="name">Ticket DTE 80mm</field>
@@ -46,12 +46,12 @@
     </record>
 
     <record id="action_ticket_dte_account_move" model="ir.actions.report">
-        <field name="name">Imprimir Ticket DTE</field>
+        <field name="name">Imprimir Ticket</field>
         <field name="model">account.move</field>
         <field name="report_type">qweb-pdf</field>
         <field name="report_name">mrg_ticket_print_sale_order.report_ticket_dte_account_move</field>
         <field name="report_file">mrg_ticket_print_sale_order.report_ticket_dte_account_move</field>
-        <field name="print_report_name">'Ticket-DTE-%s' % (object.dte_numero_control or object.name)</field>
+        <field name="print_report_name">'Ticket-DTE-%s' % object.dte_numero_control if object.dte_numero_control else 'Ticket-%s' % (object.name or '').replace('/', '_')</field>
         <field name="paperformat_id" ref="ticket_dte_paper_format"/>
         <!-- Sin binding_model_id: solo accesible mediante el botón del formulario -->
     </record>

@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
-        <template id="report_ticket_dte_account_move" name="Ticket DTE Factura">
+        <template id="report_ticket_dte_account_move" name="Ticket Factura">
             <t t-call="web.html_container">
                 <t t-foreach="docs" t-as="o">
+                    <t t-set="is_dte" t-value="bool(o.dte_estado == 'PROCESADO' and o.dte_numero_control)"/>
                     <div style="font-family: 'Courier New', Courier, monospace; font-size: 11px; color: #000; background: #fff; width: 100%; padding: 4px 2px;">
 
                         <!-- ========== CABECERA EMPRESA ========== -->
@@ -29,37 +30,54 @@
                             </t>
                         </div>
 
-                        <!-- ========== TIPO DOCUMENTO DTE ========== -->
+                        <!-- ========== TIPO DOCUMENTO ========== -->
                         <div style="text-align: center; font-weight: bold; font-size: 12px; border: 1px solid #000; padding: 3px; margin-bottom: 6px;">
-                            <t t-if="o.doc_type_id">
-                                <t t-esc="o.doc_type_id.name.upper() if o.doc_type_id.name else 'DTE'"/>
+                            <t t-if="is_dte and o.doc_type_id and o.doc_type_id.name">
+                                <t t-esc="o.doc_type_id.name.upper()"/>
+                            </t>
+                            <t t-elif="o.doc_type_id and o.doc_type_id.name">
+                                <t t-esc="o.doc_type_id.name.upper()"/>
                             </t>
                             <t t-else="">
                                 TICKET DE VENTA
                             </t>
                         </div>
 
-                        <!-- ========== DATOS DTE ========== -->
+                        <!-- ========== DATOS DOCUMENTO (DTE O NORMAL) ========== -->
                         <div style="border-bottom: 1px dashed #000; padding-bottom: 5px; margin-bottom: 5px;">
-                            <div>
-                                <b>No. Control:</b>
-                                <t t-esc="o.dte_numero_control or 'N/A'"/>
-                            </div>
-                            <t t-if="o.dte_codigo_generacion">
-                                <div style="font-size: 9px; word-break: break-all;">
-                                    <b>Cod. Gen:</b>
-                                    <t t-esc="o.dte_codigo_generacion"/>
+                            <t t-if="is_dte">
+                                <div>
+                                    <b>No. Control:</b>
+                                    <t t-esc="o.dte_numero_control"/>
+                                </div>
+                                <t t-if="o.dte_codigo_generacion">
+                                    <div style="font-size: 9px; word-break: break-all;">
+                                        <b>Cod. Gen:</b>
+                                        <t t-esc="o.dte_codigo_generacion"/>
+                                    </div>
+                                </t>
+                                <div>
+                                    <b>Fecha:</b>
+                                    <t t-if="o.dte_fecha_hora_generacion">
+                                        <span t-field="o.dte_fecha_hora_generacion"/>
+                                    </t>
+                                    <t t-else="">
+                                        <span t-field="o.invoice_date"/>
+                                    </t>
                                 </div>
                             </t>
-                            <div>
-                                <b>Fecha:</b>
-                                <t t-if="o.dte_fecha_hora_generacion">
-                                    <span t-field="o.dte_fecha_hora_generacion"/>
+                            <t t-else="">
+                                <div>
+                                    <b>No. Factura:</b>
+                                    <t t-esc="o.name"/>
+                                </div>
+                                <t t-if="o.invoice_date">
+                                    <div>
+                                        <b>Fecha:</b>
+                                        <span t-field="o.invoice_date"/>
+                                    </div>
                                 </t>
-                                <t t-else="">
-                                    <span t-field="o.invoice_date"/>
-                                </t>
-                            </div>
+                            </t>
                         </div>
 
                         <!-- ========== DATOS RECEPTOR ========== -->
@@ -118,7 +136,7 @@
                         <div style="border-top: 1px solid #000; padding-top: 4px; margin-bottom: 5px;">
                             <table style="width: 100%; font-size: 11px;">
                                 <tr>
-                                    <td style="text-align: right; padding: 1px 3px;">Subtotal (sin IVA):</td>
+                                    <td style="text-align: right; padding: 1px 3px;">Subtotal:</td>
                                     <td style="text-align: right; padding: 1px 0; width: 38%;">
                                         <span t-field="o.amount_untaxed"
                                               t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
@@ -126,7 +144,7 @@
                                 </tr>
                                 <t t-if="o.amount_tax">
                                     <tr>
-                                        <td style="text-align: right; padding: 1px 3px;">IVA (13%):</td>
+                                        <td style="text-align: right; padding: 1px 3px;">IVA:</td>
                                         <td style="text-align: right; padding: 1px 0;">
                                             <span t-field="o.amount_tax"
                                                   t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
@@ -143,18 +161,23 @@
                             </table>
                         </div>
 
-                        <!-- ========== CONDICIÓN DE PAGO ========== -->
-                        <div style="border-top: 1px dashed #000; padding-top: 4px; margin-bottom: 5px; font-size: 10px;">
-                            <t t-if="o.dte_condicion_operacion">
-                                <div><b>Condición:</b> <span t-field="o.dte_condicion_operacion"/></div>
-                            </t>
-                            <t t-if="o.dte_forma_pago_id">
-                                <div><b>Forma de pago:</b> <t t-esc="o.dte_forma_pago_id.name or ''"/></div>
-                            </t>
-                        </div>
+                        <!-- ========== CONDICIÓN / PLAZO DE PAGO ========== -->
+                        <t t-if="o.dte_condicion_operacion or o.dte_forma_pago_id or o.invoice_payment_term_id">
+                            <div style="border-top: 1px dashed #000; padding-top: 4px; margin-bottom: 5px; font-size: 10px;">
+                                <t t-if="o.dte_condicion_operacion">
+                                    <div><b>Condición:</b> <span t-field="o.dte_condicion_operacion"/></div>
+                                </t>
+                                <t t-elif="o.invoice_payment_term_id">
+                                    <div><b>Términos de Pago:</b> <t t-esc="o.invoice_payment_term_id.name"/></div>
+                                </t>
+                                <t t-if="o.dte_forma_pago_id">
+                                    <div><b>Forma de pago:</b> <t t-esc="o.dte_forma_pago_id.name or ''"/></div>
+                                </t>
+                            </div>
+                        </t>
 
-                        <!-- ========== CÓDIGO QR DTE ========== -->
-                        <t t-if="o.dte_qr_image_sv">
+                        <!-- ========== CÓDIGO QR DTE (SOLO SI ES DTE) ========== -->
+                        <t t-if="is_dte and o.dte_qr_image_sv">
                             <div style="text-align: center; margin: 6px 0; border-top: 1px dashed #000; padding-top: 5px;">
                                 <img t-att-src="image_data_uri(o.dte_qr_image_sv)"
                                      style="width: 100px; height: 100px; margin: 0 auto; display: block;"/>
@@ -164,8 +187,8 @@
                             </div>
                         </t>
 
-                        <!-- ========== SELLO DE RECEPCIÓN ========== -->
-                        <t t-if="o.dte_sello_recepcion">
+                        <!-- ========== SELLO DE RECEPCIÓN (SOLO SI ES DTE) ========== -->
+                        <t t-if="is_dte and o.dte_sello_recepcion">
                             <div style="border-top: 1px dashed #000; padding-top: 4px; margin-top: 4px; font-size: 8px; word-break: break-all; text-align: center;">
                                 <div><b>Sello MH:</b></div>
                                 <div><t t-esc="o.dte_sello_recepcion"/></div>
