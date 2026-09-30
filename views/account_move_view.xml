@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- Botón "Imprimir Ticket DTE" en el formulario de account.move.
-         Visible SOLO cuando el DTE ha sido procesado exitosamente por Hacienda.
+    <!-- Botón "Imprimir Ticket" en el formulario de account.move.
+         Visible para facturas de cliente en estado publicado (posted).
+         Funciona tanto para facturas normales como para facturas DTE procesadas.
          Sintaxis Odoo 18/19/20: invisible directo (sin attrs) -->
     <record id="view_move_form_inherit_ticket_dte" model="ir.ui.view">
         <field name="name">account.move.form.ticket.dte</field>
@@ -9,14 +10,14 @@
         <field name="inherit_id" ref="account.view_move_form"/>
         <field name="priority">110</field><!-- Mayor que mrg_dte_sv (100) para cargar después -->
         <field name="arch" type="xml">
-            <!-- Anclamos antes del botón de registro de pago, igual que los demás botones DTE -->
+            <!-- Anclamos antes del botón de registro de pago -->
             <xpath expr="//header/button[@name='action_register_payment']" position="before">
                 <button name="action_print_dte_ticket"
                         type="object"
                         string="Imprimir Ticket"
                         class="btn-secondary"
                         icon="fa-print"
-                        invisible="dte_estado != 'PROCESADO'"/>
+                        invisible="state != 'posted' or move_type not in ('out_invoice', 'out_refund')"/>
             </xpath>
         </field>
     </record>
