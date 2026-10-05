@@ -35,4 +35,6 @@
         'views/account_move_view.xml',   # Botón en formulario de factura y control DTE
     ],
     'installable': True,
+    'application': False,
+    'auto_install': False,
 }
