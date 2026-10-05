@@ -21,7 +21,6 @@
         <field name="model">sale.order</field>
         <field name="report_type">qweb-pdf</field>
         <field name="report_name">mrg_ticket_print_sale_order.report_ticket_sale_order</field>
-        <field name="report_file">mrg_ticket_print_sale_order.report_ticket_sale_order</field>
         <field name="paperformat_id" ref="ticket_paper_format" /> <!-- Estableces el formato de papel personalizado "Ticket" -->
         <field name="binding_model_id" ref="sale.model_sale_order"/>
         <field name="binding_type">report</field>
@@ -50,7 +49,6 @@
         <field name="model">account.move</field>
         <field name="report_type">qweb-pdf</field>
         <field name="report_name">mrg_ticket_print_sale_order.report_ticket_dte_account_move</field>
-        <field name="report_file">mrg_ticket_print_sale_order.report_ticket_dte_account_move</field>
         <field name="print_report_name">'Ticket-DTE-%s' % object.dte_numero_control if object.dte_numero_control else 'Ticket-%s' % (object.name or '').replace('/', '_')</field>
         <field name="paperformat_id" ref="ticket_dte_paper_format"/>
         <!-- Sin binding_model_id: solo accesible mediante el botón del formulario -->
